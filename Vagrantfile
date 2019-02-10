@@ -3,7 +3,7 @@
 
 Vagrant.configure("2") do |config|
   config.vm.box = "aekapop/centos7_ansible"
-  config.vm.box_url = "file://./package.box"
+  config.vm.box_url = "https://staff.informatics.buu.ac.th/~aekapop/package.box"
 
   config.vm.provider "virtualbox" do |vb|
     vb.memory = 512
