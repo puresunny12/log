@@ -1,0 +1,127 @@
+---
+- hosts: all
+  become: yes
+  become_user: root
+  tasks:
+
+  - name: Copy resolv file nameserver
+    template:
+     src: template/resolv-mgn.conf.j2
+     dest: /etc/resolv.conf
+     owner: root
+     group: root
+     mode: "0644"
+    when: ansible_connection == 'local'
+
+  - name: Install bind
+    yum:     
+      name: bind     
+      state: latest    
+    when: ansible_connection == 'local'
+
+  - name: Edit file 
+    lineinfile:
+      path: /etc/named.conf
+      regexp: 'listen-on port 53 { 127.0.0.1; };'
+      line:  '       listen-on port 53 {127.0.0.1; 192.168.100.11;};'
+      backup: yes
+    when: ansible_connection == 'local'
+
+  - name: Edit nameserver allow query
+    lineinfile:
+      path: /etc/named.conf
+      regexp: '	allow-query     { localhost; };'
+      line:  '  	allow-query  { any; };     '
+      backup: yes
+    when: ansible_connection == 'local'
+
+  - name: Edit nameserver include query
+    lineinfile: 
+      path: /etc/named.conf
+      line:  '  include "/etc/named/named.conf.local";'
+      backup: yes
+    when: ansible_connection == 'local'
+
+  - name: Create template
+    template:
+      src: template/named.conf.local.j2
+      dest : /etc/named/named.conf.local
+      owner: root
+      group: root
+      mode: "0755"
+      backup: yes
+    when: ansible_connection == 'local'
+
+  - name: Create Zone directory in /etc/named
+    file:
+      path: /etc/named/zones
+      state: directory
+      mode: 0755
+    when: ansible_connection == 'local'
+  
+  - name: Copy forward and revest zone file to /etc/named/zones
+    template:
+      src: '{{ item.source }}'
+      dest : '{{ item.destination }}'
+      owner: root
+      group: root
+      mode: "0755"
+    loop:
+    - { source: 'template/db.mynet-887.com.j2', destination: '/etc/named/zones/db.mynet-887.com'}
+    - { source: 'template/db.192.168.100.j2', destination: '/etc/named/zones/db.192.168.100'}
+    when: ansible_connection == 'local'
+
+  - name: Start service
+    service:
+        name: named
+        state: started
+    when: ansible_connection == 'local'
+
+  - name: Start firewalld
+    service:
+        name: firewalld
+        state: started  
+    when: ansible_connection == 'local'
+
+  - name: Open firewalld
+    firewalld:
+       port: '{{ item }}'
+       permanent: yes
+       state: enabled
+    loop:
+        - "53/udp" 
+        - "53/tcp" 
+    when: ansible_connection == 'local'
+   
+
+  - name: Start firewalld
+    service:
+        name: firewalld
+        state: restarted  
+    when: ansible_connection == 'local'
+
+  - name: Copy resolv file 
+    template:
+     src: template/resolv.conf.j2
+     dest: /etc/resolv.conf
+     owner: root
+     group: root
+     mode: "0644"
+
+  - name: Install Bind-Utils all Server
+    yum:
+       name: bind-utils
+       state: latest
+
+  - name: Check Result
+    command: nslookup ansible-mgn.mynet-887.com
+    register: myoutput
+  - debug: msg="{{ myoutput.stdout }}"
+  
+
+
+    
+
+
+
+      

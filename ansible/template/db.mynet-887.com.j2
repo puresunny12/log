@@ -1,0 +1,19 @@
+$TTL    604800
+@       IN      SOA    ns1.mynet-887.com. root.mynet-887.com. (
+          2019021801    ; Serial
+             604800     ; Refresh
+              86400     ; Retry
+            2419200     ; Expire
+             604800 )   ; Negative Cache TTL
+;
+; name servers - NS records
+     IN      NS      ns1.mynet-887.com.
+
+; name servers - A records
+ns1.mynet-887.com.          IN      A       192.168.100.11
+
+ansible-mgn                 IN      A       192.168.100.11
+server-01.mynet-887.com.    IN      A       192.168.100.80
+server-02.mynet-887.com.    IN      A       192.168.100.81
+server-03.mynet-887.com.    IN      A       192.168.100.82
+server-04.mynet-887.com.    IN      A       192.168.100.70
