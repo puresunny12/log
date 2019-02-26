@@ -21,3 +21,4 @@ Install vargrant plug-ins
 `vagrant up`
 
 `vagrant ssh ansible-mgn`
+# demo-lamp
