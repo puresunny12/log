@@ -5,15 +5,21 @@
   tasks:
   - name: Install NTP Server
     yum: name=ntp state=latest
+
   - name: Start Servicr NTP
     service: name=ntpd state=started
+
   - name: Edit configuration
     lineinfile: path=/etc/ntp.conf regexp='^server 0' line='server 0.th.pool.ntp.org iburst'
+
   - name: Start firewalld
     service: name=firewalld state=started
+
   - name: Open firewall
     firewalld: service=http permanent=yes state=enabled
+
   - name: Restart firewalld
     service: name=firewalld state=restarted
+    
   - name: set timezone to Asia/Bangkok
     timezone:  name=Asia/Bangkok
