@@ -1,5 +1,5 @@
 $TTL    604800
-@       IN      SOA    ns1.mynet-887.com. root.mynet-887.com. (
+@       IN      SOA    ns1.my-site.com. root.my-site.com. (
           2019021801    ; Serial
              604800     ; Refresh
               86400     ; Retry
@@ -7,16 +7,16 @@ $TTL    604800
              604800 )   ; Negative Cache TTL
 ;
 ; name servers - NS records
-     IN      NS      ns1.mynet-887.com.
+     IN      NS      ns1.my-site.com.
 
 ; name servers - A records
-ns1.mynet-887.com.          IN      A       192.168.100.11
+ns1.my-site.com.          IN      A       192.168.100.11
 
 ansible-mgn                 IN      A       192.168.100.11
-server-01.mynet-887.com.    IN      A       192.168.100.80
-server-02.mynet-887.com.    IN      A       192.168.100.81
-server-03.mynet-887.com.    IN      A       192.168.100.82
-server-04.mynet-887.com.    IN      A       192.168.100.70
+server-01.my-site.com.    IN      A       192.168.100.80
+server-02.my-site.com.    IN      A       192.168.100.81
+server-03.my-site.com.    IN      A       192.168.100.82
+server-04.my-site.com.    IN      A       192.168.100.70
 www                           IN      CNAME  server-01
 WEB-01                        IN        CNAME  server-02
 WEB-02                        IN        CNAME   server-03
