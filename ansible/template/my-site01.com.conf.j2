@@ -3,7 +3,12 @@ NameVirtualHost *:80
 <VirtualHost *:80>
     ServerName web-01.my-site.com
     ServerAlias my-site.com
-    DocumentRoot /var/www/my-site.com/html
-    ErrorLog /var/www/my-site.com/log/error.log
-    CustomLog /var/www/my-site.com/log/requests.log combined
+    DocumentRoot /var/nfs/www/my-site.com/html
+    <Directory /var/nfs/www/my-site.com/html>
+        Options -Indexes +FollowSymLinks +MultiViews
+        AllowOverride All
+        Require all granted
+    </Directory>
+    ErrorLog /var/nfs/www/my-site.com/log/error.log
+    CustomLog /var/nfs/www/my-site.com/log/requests.log combined
 </VirtualHost>
