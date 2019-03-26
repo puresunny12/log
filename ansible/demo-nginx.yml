@@ -258,6 +258,46 @@
         name: firewalld
         state: restarted
 
+  - name: Create dir nfs/www
+    file:
+      path: '/var/nfs/www'
+      state: directory
+      mode: 0755
+       
+  - name : Create directory html
+    file:
+      path: /var/nfs/www/{{ item }}/html
+      state: directory
+      mode: 0755
+    loop:
+      - my-site.com
+      - mynet-887.com   
+    
+  - name : Create directory log
+    file:
+      path: /var/nfs/www/{{ item }}/log
+      state: directory
+      mode: 0755
+    loop:
+      - my-site.com
+      - mynet-887.com
+
+  - name: Copy index.php to web.server
+    template:
+     src: template/index.php.j2
+     dest: /var/nfs/www/my-site.com/html/index.php
+     owner: nfsnobody
+     group: nfsnobody
+     mode: 0755
+
+  - name: Copy index.php to web.server
+    template:
+     src: template/index.php.j2
+     dest: /var/nfs/www/mynet-887.com/html/index.php
+     owner: nfsnobody
+     group: nfsnobody
+     mode: 0755
+
 
 - hosts: web
   become: yes
@@ -366,3 +406,71 @@
         name: httpd
         state: restarted
 
+- hosts: lb
+  become: yes
+  become_user: root
+  tasks:
+  
+  - name: Install nginx
+    yum:  
+      name: nginx
+      state: latest 
+
+
+  - name: Enable firewalld
+    service:
+        name: firewalld
+        enabled: yes
+    
+  - name: Start firewall
+    service:
+        name: firewalld
+        state: started
+
+  - name: Enable nginx
+    service:
+        name: nginx
+        enabled: yes
+    
+  - name: Start nginx
+    service:
+        name: nginx
+        state: started
+
+  - name: Open firewalld
+    firewalld:
+       port: '{{ item }}'
+       permanent: yes
+       state: enabled
+    loop:
+        - "80/tcp" 
+  
+  - name: Open firewall service http and https
+    firewalld:
+        service: '{{ item }}'
+        permanent: yes
+        state: enabled
+    loop:
+        - "http"
+        - "https"
+  
+  - name: Copy wed01
+    template:
+      src: '{{ item.source }}'
+      dest : '{{ item.destination }}'
+      owner: root
+      group: root
+      mode: "0755"
+    loop:
+    - { source: 'template/my-net.conf.j2', destination: '/etc/nginx/conf.d/my-net.conf'}
+    - { source: 'template/my-site.conf.j2', destination: '/etc/nginx/conf.d/my-site.conf'}
+
+  - name: Restart nginx
+    service:
+        name:  nginx
+        state:  restarted
+        
+  - name: Restart firewalld
+    service:
+        name:  firewalld
+        state:  restarted
