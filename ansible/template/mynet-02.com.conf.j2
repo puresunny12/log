@@ -10,5 +10,5 @@ NameVirtualHost *:80
         Require all granted
     </Directory>
     ErrorLog /var/nfs/www/mynet-887.com/log/error.log
-    CustomLog /var/nfs/www/mynet-887.com/log/requests.log combined
+    CustomLog "| /bin/sh -c '/var/nfs/www/mynet-887.com/log/requests.log | /usr/bin/logger -thttpd_mynet -plocal1.notice'" combined
 </VirtualHost>
